@@ -1,3 +1,4 @@
+
 import { Request, Response } from "express";
 import AlunoModel from "../models/alunoModel";
 
@@ -7,7 +8,22 @@ class AlunoController {
 
     try {
       const aluno = await AlunoModel.findById(alunoId);
+      if (aluno) {
+        res.status(200).json(aluno);
+      } else {
+        res.status(404).json({ message: "Aluno not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 
+  static async getAlunoByCpf(req: Request, res: Response): Promise<void> {
+    const cpf = req.params.cpf;
+
+    try {
+      const aluno = await AlunoModel.findByCpf(cpf);
       if (aluno) {
         res.status(200).json(aluno);
       } else {
@@ -34,7 +50,7 @@ class AlunoController {
 
     try {
       const newAluno = new AlunoModel(alunoData);
-      const savedAluno = await AlunoModel.save(newAluno);
+      const savedAluno = await newAluno.save();
       res.status(201).json(savedAluno);
     } catch (error) {
       console.error(error);
@@ -55,7 +71,7 @@ class AlunoController {
           ...updatedAlunoData,
         });
 
-        await AlunoModel.update(updatedAluno);
+        await updatedAluno.update();
 
         res.status(200).json(updatedAluno);
       } else {
@@ -72,60 +88,6 @@ class AlunoController {
 
     try {
       await AlunoModel.excluirPorId(alunoId);
-      res.status(204).send();
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
-  static async getAlunoByCPF(req: Request, res: Response): Promise<void> {
-    const alunoCPF = req.params.cpf;
-
-    try {
-      const aluno = await AlunoModel.findByCPF(alunoCPF);
-
-      if (aluno) {
-        res.status(200).json(aluno);
-      } else {
-        res.status(404).json({ message: "Aluno not found" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
-  static async updateAlunoByCPF(req: Request, res: Response): Promise<void> {
-    const alunoCPF = req.params.cpf;
-    const updatedAlunoData = req.body;
-
-    try {
-      const existingAluno = await AlunoModel.findByCPF(alunoCPF);
-
-      if (existingAluno) {
-        const updatedAluno = new AlunoModel({
-          ...existingAluno,
-          ...updatedAlunoData,
-        });
-
-        await AlunoModel.update(updatedAluno);
-
-        res.status(200).json(updatedAluno);
-      } else {
-        res.status(404).json({ message: "Aluno not found" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
-  static async deleteAlunoByCPF(req: Request, res: Response): Promise<void> {
-    const alunoCPF = req.params.cpf;
-
-    try {
-      await AlunoModel.deleteByCPF(alunoCPF);
       res.status(204).send();
     } catch (error) {
       console.error(error);
