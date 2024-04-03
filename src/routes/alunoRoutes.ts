@@ -10,7 +10,12 @@ router.get("/", async (req: Request, res: Response) => {
 
 // Get aluno by CPF
 router.get("/cpf/:cpf", async (req: Request, res: Response) => {
-  await AlunoController.getAlunoByCPF(req, res);
+  await AlunoController.getAlunoByCpf(req, res);
+});
+
+// Get aluno by ID
+router.get("/:id", async (req: Request, res: Response) => {
+  await AlunoController.getAlunoById(req, res);
 });
 
 // Create new aluno
@@ -18,14 +23,14 @@ router.post("/", async (req: Request, res: Response) => {
   await AlunoController.createAluno(req, res);
 });
 
-// Update aluno by CPF
-router.put("/cpf/:cpf", async (req: Request, res: Response) => {
-  await AlunoController.updateAlunoByCPF(req, res);
+// Update aluno by ID
+router.put("/:id", async (req: Request, res: Response) => {
+  await AlunoController.updateAluno(req, res);
 });
 
-// Delete aluno by CPF
-router.delete("/cpf/:cpf", async (req: Request, res: Response) => {
-  await AlunoController.deleteAlunoByCPF(req, res);
+// Delete aluno by ID
+router.delete("/:id", async (req: Request, res: Response) => {
+  await AlunoController.deleteAluno(req, res);
 });
 
 export default router;
