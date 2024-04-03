@@ -1,31 +1,31 @@
 import express, { Request, Response } from 'express';
-import GestorController from '../controllers/gestorController';
+import EscolaController from '../controllers/escolaController';
 
 const router = express.Router();
 
-// Get all gestores
+// Get escola by CPF
+router.get("/cpf/:cpf", async (req: Request, res: Response) => {
+  await EscolaController.getEscolaByCPF(req, res);
+});
+
+// Get all escolas
 router.get('/', async (req: Request, res: Response) => {
-    await GestorController.getAllGestores(req, res);
+    await EscolaController.getAllEscolas(req, res);
 });
 
-// Get gestor by ID
-router.get('/:id', async (req: Request, res: Response) => {
-    await GestorController.getGestorById(req, res);
-});
-
-// Create new gestor
+// Create new escola
 router.post('/', async (req: Request, res: Response) => {
-    await GestorController.createGestor(req, res);
+    await EscolaController.createEscola(req, res);
 });
 
-// Update gestor by ID
-router.put('/:id', async (req: Request, res: Response) => {
-    await GestorController.updateGestor(req, res);
+// Update escola by CPF
+router.put("/cpf/:cpf", async (req: Request, res: Response) => {
+  await EscolaController.updateEscolaByCPF(req, res);
 });
 
-// Delete gestor by ID
-router.delete('/:id', async (req: Request, res: Response) => {
-    await GestorController.deleteGestor(req, res);
+// Delete escola by CPF
+router.delete("/cpf/:cpf", async (req: Request, res: Response) => {
+  await EscolaController.deleteEscolaByCPF(req, res);
 });
 
 export default router;
