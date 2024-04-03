@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import AlunoModel from "../models/alunoModel";
 
