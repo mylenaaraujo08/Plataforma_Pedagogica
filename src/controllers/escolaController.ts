@@ -1,5 +1,5 @@
-import express, { Request, Response } from "express";
-import EscolaController from "../controllers/escolaController";
+import { Request, Response } from 'express';
+import EscolaModel from '../models/escolaModel';
 
 class EscolaController {
     static async getEscolaByCPF(req: Request, res: Response): Promise<void> {
