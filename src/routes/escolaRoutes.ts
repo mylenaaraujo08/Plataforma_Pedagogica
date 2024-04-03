@@ -1,31 +1,83 @@
-import express, { Request, Response } from 'express';
-import EscolaController from '../controllers/escolaController';
+import { Request, Response } from 'express';
+import EscolaModel from '../models/escolaModel';
 
-const router = express.Router();
+class EscolaController {
+    static async getEscolaByCPF(req: Request, res: Response): Promise<void> {
+        const escolaCPF = req.params.cpf;
 
-// Get escola by CPF
-router.get("/cpf/:cpf", async (req: Request, res: Response) => {
-  await EscolaController.getEscolaByCPF(req, res);
-});
+        try {
+            const escola = await EscolaModel.findByCPF(escolaCPF);
 
-// Get all escolas
-router.get('/', async (req: Request, res: Response) => {
-    await EscolaController.getAllEscolas(req, res);
-});
+            if (escola) {
+                res.status(200).json(escola);
+            } else {
+                res.status(404).json({ message: 'Escola not found' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 
-// Create new escola
-router.post('/', async (req: Request, res: Response) => {
-    await EscolaController.createEscola(req, res);
-});
+    static async getAllEscolas(req: Request, res: Response): Promise<void> {
+        try {
+            const escolas = await EscolaModel.findAll();
+            res.status(200).json(escolas);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 
-// Update escola by CPF
-router.put("/cpf/:cpf", async (req: Request, res: Response) => {
-  await EscolaController.updateEscolaByCPF(req, res);
-});
+    static async createEscola(req: Request, res: Response): Promise<void> {
+        const escolaData = req.body;
 
-// Delete escola by CPF
-router.delete("/cpf/:cpf", async (req: Request, res: Response) => {
-  await EscolaController.deleteEscolaByCPF(req, res);
-});
+        try {
+            const novaEscola = new EscolaModel(escolaData);
+            const escolaSalva = await EscolaModel.save(novaEscola);
+            res.status(201).json(escolaSalva);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 
-export default router;
+    static async updateEscolaByCPF(req: Request, res: Response): Promise<void> {
+        const escolaCPF = req.params.cpf;
+        const dadosAtualizadosEscola = req.body;
+
+        try {
+            const escolaExistente = await EscolaModel.findByCPF(escolaCPF);
+
+            if (escolaExistente) {
+                const escolaAtualizada = new EscolaModel({
+                    ...escolaExistente,
+                    ...dadosAtualizadosEscola,
+                });
+
+                await EscolaModel.update(escolaAtualizada);
+
+                res.status(200).json(escolaAtualizada);
+            } else {
+                res.status(404).json({ message: 'Escola not found' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    static async deleteEscolaByCPF(req: Request, res: Response): Promise<void> {
+        const escolaCPF = req.params.cpf;
+
+        try {
+            await EscolaModel.deleteByCPF(escolaCPF);
+            res.status(204).send();
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+}
+
+export default EscolaController;
