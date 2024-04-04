@@ -10,7 +10,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 // Get escola by Codigo INEP
 router.get("/codigoInep/:codigoInep", async (req: Request, res: Response) => {
-  await EscolaController. getEscolaByCodigoInep(req, res);
+  await EscolaController.getEscolaByCodigoInep(req, res);
 });
 
 // Create new escola
@@ -26,6 +26,11 @@ router.put("/:codigoInep", async (req: Request, res: Response) => {
 // Delete escola by Codigo INEP
 router.delete("/:codigoInep", async (req: Request, res: Response) => {
   await EscolaController.deleteEscola(req, res);
+});
+
+// Get escola by name
+router.get("/nomedaescola/:nomeEscola", async (req: Request, res: Response) => {
+  await EscolaController.getEscolaByNome(req, res);
 });
 
 export default router;
