@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import EscolaModel from "../models/escolaModel";
+import { EscolaModel } from "../models/escolaModel";
 
 class EscolaController {
   static async getEscolaByCodigoInep(req: Request, res: Response): Promise<void> {
@@ -72,6 +72,22 @@ class EscolaController {
     try {
       await EscolaModel.deleteByCodigoInep(codigoInep);
       res.status(204).send();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async getEscolaByNome(req: Request, res: Response): Promise<void> {
+    const nomeEscola = req.params.nomeEscola;
+
+    try {
+      const escola = await EscolaModel.findByNome(nomeEscola);
+      if (escola) {
+        res.status(200).json(escola);
+      } else {
+        res.status(404).json({ message: "Escola not found" });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
