@@ -1,3 +1,4 @@
+// gestorRoutes.ts
 import express, { Request, Response } from 'express';
 import GestorController from '../controllers/gestorController';
 
@@ -11,6 +12,21 @@ router.get('/', async (req: Request, res: Response) => {
 // Get gestor by ID
 router.get('/:id', async (req: Request, res: Response) => {
     await GestorController.getGestorById(req, res);
+});
+
+// Get gestor by CPF
+router.get('/cpf/:cpf', async (req: Request, res: Response) => {
+    await GestorController.getGestorByCpf(req, res);
+});
+
+// Get gestor by nome
+router.get('/nome/:nome', async (req: Request, res: Response) => {
+    await GestorController.getGestorByNome(req, res);
+});
+
+// Get gestor by escola
+router.get('/escola/:escola', async (req: Request, res: Response) => {
+    await GestorController.getGestorByEscola(req, res);
 });
 
 // Create new gestor
