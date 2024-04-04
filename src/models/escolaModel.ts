@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-class EscolaModel {
+export class EscolaModel {
   static pool = new Pool({
     ssl: {
       rejectUnauthorized: false,
@@ -190,9 +190,23 @@ class EscolaModel {
       ]
     );
   }
+  
   static async deleteByCodigoInep(codigoInep: string): Promise<void> {
     await this.pool.query("DELETE FROM escola WHERE codigo_inep = $1", [codigoInep]);
   }
+
+  static async findByNome(nomeEscola: string): Promise<EscolaModel | undefined> {
+    const result = await this.pool.query(
+        `
+        SELECT *
+        FROM escola
+        WHERE escola ILIKE $1
+        `,
+        [`%${nomeEscola}%`]
+    );
+    return result.rows[0] ? new EscolaModel(result.rows[0]) : undefined;
+  }
 }
+
 
 export default EscolaModel;
