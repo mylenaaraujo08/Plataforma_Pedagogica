@@ -1,57 +1,61 @@
-import { Request, Response } from "express";
-import CadastroModel from "../models/cadastroModel";
+import express, { Request, Response } from "express";
+import CadastroController from "../controllers/cadastroController";
 
-class CadastroController {
-  static async getUsuariosByEscola(req: Request, res: Response): Promise<void> {
-    let nomeEscola = req.params.nomeEscola;
+const router = express.Router();
 
-    // Se nenhum nome de escola for fornecido, defina-o como uma string vazia para buscar todas as escolas
-    if (!nomeEscola) {
-      nomeEscola = "";
-    }
+// Rota para buscar usuários por nome da escola
+router.get("/escola/:nomeEscola?", async (req: Request, res: Response) => {
+  let { nomeEscola } = req.params;
 
-    try {
-      const usuarios = await CadastroModel.findBySchoolName(nomeEscola);
-      res.status(200).json(usuarios);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+  // Se nenhum nome de escola for fornecido, deixe-o como uma string vazia para buscar todas as escolas
+  if (!nomeEscola) {
+    nomeEscola = "";
   }
 
-  static async getUsuariosByNome(req: Request, res: Response): Promise<void> {
-    const nome = req.params.nome;
-
-    try {
-      const usuarios = await CadastroModel.findByNome(nome);
-      res.status(200).json(usuarios);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+  try {
+    // Chamar o método correto do CadastroController
+    await CadastroController.getUsuariosByEscola(req, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
+});
 
-  static async getUsuariosByCPF(req: Request, res: Response): Promise<void> {
-    const cpf = req.params.cpf;
+// Rota para buscar usuários por nome
+router.get("/nome/:nome", async (req: Request, res: Response) => {
+  const { nome } = req.params;
 
-    try {
-      const usuarios = await CadastroModel.findByCPF(cpf);
-      res.status(200).json(usuarios);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+  try {
+    // Chamar o método correto do CadastroController
+    await CadastroController.getUsuariosByNome(req, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
+});
 
-  static async getAllUsuarios(req: Request, res: Response): Promise<void> {
-    try {
-      const usuarios = await CadastroModel.getAll();
-      res.status(200).json(usuarios);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+// Rota para buscar usuários por CPF
+router.get("/cpf/:cpf", async (req: Request, res: Response) => {
+  const { cpf } = req.params;
+
+  try {
+    // Chamar o método correto do CadastroController
+    await CadastroController.getUsuariosByCPF(req, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+});
 
-export default CadastroController;
+// Rota para buscar todos os usuários
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    // Chamar o método correto do CadastroController
+    await CadastroController.getAllUsuarios(req, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+export default router;
