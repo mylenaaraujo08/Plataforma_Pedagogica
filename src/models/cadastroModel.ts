@@ -46,6 +46,18 @@ class CadastroModel {
     return result.rows.map((data: any) => new CadastroModel(data));
   }
 
+  static async findByCPF(cpf: string): Promise<CadastroModel[]> {
+    const result = await this.pool.query(
+      `
+      SELECT *
+      FROM cadastro
+      WHERE cpf = $1
+    `,
+      [cpf]
+    );
+    return result.rows.map((data: any) => new CadastroModel(data));
+  }
+
   static async getAll(): Promise<CadastroModel[]> {
     const result = await this.pool.query(
       `
