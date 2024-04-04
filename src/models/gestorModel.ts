@@ -1,3 +1,4 @@
+// gestorModel.ts
 import { Pool } from 'pg';
 
 class GestorModel {
@@ -15,6 +16,7 @@ class GestorModel {
   funcao?: string;
   telefone?: string;
   celular?: string;
+  escola?: string;
 
   constructor(data: any = {}) {
     this.id = data.id || undefined;
@@ -24,6 +26,7 @@ class GestorModel {
     this.funcao = data.funcao || undefined;
     this.telefone = data.telefone || undefined;
     this.celular = data.celular || undefined;
+    this.escola = data.escola || undefined;
   }
 
   static async findById(id: string | null, cpf: string | null, nome: string | null): Promise<GestorModel | undefined> {
@@ -43,8 +46,8 @@ class GestorModel {
       values.push(cpf);
     }
     if (nome) {
-      query += ` AND nome_completo = $${values.length + 1}`;
-      values.push(nome);
+      query += ` AND nome_completo ILIKE $${values.length + 1}`;
+      values.push(`%${nome}%`);
     }
 
     const result = await this.pool.query(query, values);
@@ -71,9 +74,10 @@ class GestorModel {
           email,
           funcao,
           telefone,
-          celular
+          celular,
+          escola
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `,
       [
         gestor.id,
@@ -82,7 +86,8 @@ class GestorModel {
         gestor.email,
         gestor.funcao,
         gestor.telefone,
-        gestor.celular
+        gestor.celular,
+        gestor.escola
       ]
     );
     return gestor;
@@ -98,8 +103,9 @@ class GestorModel {
           email = $3,
           funcao = $4,
           telefone = $5,
-          celular = $6
-        WHERE id = $7
+          celular = $6,
+          escola = $7
+        WHERE id = $8
       `,
       [
         gestor.nome_completo,
@@ -108,6 +114,7 @@ class GestorModel {
         gestor.funcao,
         gestor.telefone,
         gestor.celular,
+        gestor.escola,
         gestor.id,
       ]
     );
@@ -141,11 +148,23 @@ class GestorModel {
       `
         SELECT *
         FROM gestores
-        WHERE nome_completo = $1
+        WHERE nome_completo ILIKE $1
       `,
-      [nome]
+      [`%${nome}%`]
     );
     return result.rows[0] ? new GestorModel(result.rows[0]) : undefined;
+  }
+
+  static async findByEscola(escolaQuery: string): Promise<GestorModel[]> {
+    const result = await this.pool.query(
+      `
+        SELECT *
+        FROM gestores
+        WHERE escola ILIKE $1
+      `,
+      [`%${escolaQuery}%`]
+    );
+    return result.rows.map((data: any) => new GestorModel(data));
   }
 
   static async deleteByCpf(cpf: string): Promise<void> {
@@ -162,9 +181,9 @@ class GestorModel {
     await this.pool.query(
       `
         DELETE FROM gestores
-        WHERE nome_completo = $1
+        WHERE nome_completo ILIKE $1
       `,
-      [nome]
+      [`%${nome}%`]
     );
   }
 }
