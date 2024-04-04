@@ -3,7 +3,12 @@ import CadastroModel from "../models/cadastroModel";
 
 class CadastroController {
   static async getUsuariosByEscola(req: Request, res: Response): Promise<void> {
-    const nomeEscola = req.params.nomeEscola;
+    let nomeEscola = req.params.nomeEscola;
+
+    // Se nenhum nome de escola for fornecido, defina-o como uma string vazia para buscar todas as escolas
+    if (!nomeEscola) {
+      nomeEscola = "";
+    }
 
     try {
       const usuarios = await CadastroModel.findBySchoolName(nomeEscola);
@@ -19,6 +24,18 @@ class CadastroController {
 
     try {
       const usuarios = await CadastroModel.findByNome(nome);
+      res.status(200).json(usuarios);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async getUsuariosByCPF(req: Request, res: Response): Promise<void> {
+    const cpf = req.params.cpf;
+
+    try {
+      const usuarios = await CadastroModel.findByCPF(cpf);
       res.status(200).json(usuarios);
     } catch (error) {
       console.error(error);
