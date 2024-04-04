@@ -26,6 +26,7 @@ class AlunoModel {
   nome_da_mae: string;
   nome_do_pai: string;
   nome_do_responsavel: string;
+  matricula: string;
 
   constructor(data: any) {
     this.id = data.id || undefined;
@@ -42,6 +43,7 @@ class AlunoModel {
     this.nome_da_mae = data.nome_da_mae || undefined;
     this.nome_do_pai = data.nome_do_pai || undefined;
     this.nome_do_responsavel = data.nome_do_responsavel || undefined;
+    this.matricula = data.matricula || undefined;
   }
 
   static async findById(id: string): Promise<AlunoModel | undefined> {
@@ -79,7 +81,43 @@ class AlunoModel {
     );
     return result.rows[0] ? new AlunoModel(result.rows[0]) : undefined;
   }
-  
+
+  static async findByNome(nome: string): Promise<AlunoModel[]> {
+    const result = await this.pool.query(
+      `
+      SELECT *
+      FROM alunos
+      WHERE nome_completo ILIKE $1
+    `,
+      [`%${nome}%`]
+    );
+    return result.rows.map((data: any) => new AlunoModel(data));
+  }
+
+  static async findByEscola(escola: string): Promise<AlunoModel[]> {
+    const result = await this.pool.query(
+      `
+      SELECT *
+      FROM alunos
+      WHERE escola ILIKE $1
+    `,
+      [`%${escola}%`]
+    );
+    return result.rows.map((data: any) => new AlunoModel(data));
+  }
+
+  static async findByMatricula(matricula: string): Promise<AlunoModel | undefined> {
+    const result = await this.pool.query(
+      `
+      SELECT *
+      FROM alunos
+      WHERE matricula = $1
+    `,
+      [matricula]
+    );
+    return result.rows[0] ? new AlunoModel(result.rows[0]) : undefined;
+  }
+
   static async findAll(): Promise<AlunoModel[]> {
     const result = await this.pool.query(
       `
@@ -106,9 +144,10 @@ class AlunoModel {
         turno,
         nome_da_mae,
         nome_do_pai,
-        nome_do_responsavel
+        nome_do_responsavel,
+        matricula
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING *
     `,
       [
@@ -125,6 +164,7 @@ class AlunoModel {
         this.nome_da_mae,
         this.nome_do_pai,
         this.nome_do_responsavel,
+        this.matricula,
       ]
     );
     return new AlunoModel(result.rows[0]);
@@ -147,8 +187,9 @@ class AlunoModel {
         turno = $10,
         nome_da_mae = $11,
         nome_do_pai = $12,
-        nome_do_responsavel = $13
-      WHERE id = $14
+        nome_do_responsavel = $13,
+        matricula = $14
+      WHERE id = $15
     `,
       [
         this.nome_completo,
@@ -164,11 +205,12 @@ class AlunoModel {
         this.nome_da_mae,
         this.nome_do_pai,
         this.nome_do_responsavel,
+        this.matricula,
         this.id,
       ]
     );
   }
-  
+
   static async excluirPorId(id: string): Promise<void> {
     await this.pool.query("DELETE FROM alunos WHERE id = $1", [id]);
   }
