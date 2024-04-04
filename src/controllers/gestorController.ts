@@ -1,3 +1,4 @@
+// gestorController.ts
 import { Request, Response } from 'express';
 import GestorModel from '../models/gestorModel';
 
@@ -43,6 +44,17 @@ class GestorController {
       }
     } catch (error) {
       console.error('Error getting gestor by name:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  static async getGestorByEscola(req: Request, res: Response): Promise<void> {
+    try {
+      const escolaQuery = req.params.escola;
+      const gestores = await GestorModel.findByEscola(escolaQuery);
+      res.status(200).json(gestores);
+    } catch (error) {
+      console.error('Error getting gestor by school:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   }
